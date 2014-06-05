@@ -43,6 +43,7 @@ extern void yyerror(void *yyscanner, const char *s);
 %token BLEND
 %token BEFORE
 %token SINUSOID
+%token RSINUSOID
 %token START
 %token LIGHTS
 %token ON
@@ -69,6 +70,7 @@ command:
   | streamframes
   | profile
   | sinusoid
+  | rsinusoid
   | lights
   | bye
   | home
@@ -157,6 +159,18 @@ sinusoid:
     }
   | SINUSOID STOP { 
     command->type = cmd_sinusoid; 
+    command->boolean = false; 
+    };
+
+rsinusoid:
+  RSINUSOID START number number { 
+    command->type = cmd_rsinusoid;
+    command->boolean = true;
+    command->amplitude = $<fval>3;
+    command->period = $4;
+    }
+  | RSINUSOID STOP { 
+    command->type = cmd_rsinusoid; 
     command->boolean = false; 
     };
 

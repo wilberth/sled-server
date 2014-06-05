@@ -14,6 +14,7 @@ enum command_type_t {
   cmd_profile_execute,
   cmd_profile_set,
   cmd_sinusoid,
+  cmd_rsinusoid,
   cmd_lights,
   cmd_bye,
   cmd_home,

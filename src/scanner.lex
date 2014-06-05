@@ -35,6 +35,7 @@ extern int yyparse(parser_t *parser);
 (?i:blend)             { return BLEND; }
 (?i:before)            { return BEFORE; }
 (?i:sinusoid)          { return SINUSOID; }
+(?i:sinusoid)          { return RSINUSOID; }
 (?i:start)             { return START; }
 (?i:lights)            { return LIGHTS; }
 (?i:on)                { return ON; }

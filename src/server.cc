@@ -187,6 +187,27 @@ static void rtc3d_command_handler(rtc3d_connection_t *rtc3d_conn, char *cmd)
 		}
 
 
+		case cmd_rsinusoid: {
+			if(command.boolean) {
+				if(sled_rsinusoid_start(ctx->sled, command.amplitude, command.period) == -1) {
+					syslog(LOG_ERR, "%s() could not start rsinusoid", __FUNCTION__);
+					rtc3d_send_error(rtc3d_conn, (char *) "err-rsinusoid-start");
+				} else {
+					rtc3d_send_command(rtc3d_conn, (char *) "ok-rsinusoid-start");
+				}
+			} else {
+				if(sled_rsinusoid_stop(ctx->sled) == -1) {
+					syslog(LOG_ERR, "%s() could not stop rsinusoid", __FUNCTION__);
+					rtc3d_send_error(rtc3d_conn, (char *) "err-rsinusoid-stop");
+				} else {
+					rtc3d_send_command(rtc3d_conn, (char *) "ok-rsinusoid-stop");
+				}
+			}
+
+			break;
+		}
+
+
 		case cmd_lights: {
 			if(sled_light_set_state(ctx->sled, command.boolean) == -1)
 				rtc3d_send_error(rtc3d_conn, (char *) "err-light");

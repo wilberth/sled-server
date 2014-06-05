@@ -19,6 +19,10 @@ int sled_rt_get_position_and_time(sled_t *handle, double &position, double &time
 int sled_sinusoid_start(sled_t *sled, double amplitude, double period);
 int sled_sinusoid_stop(sled_t *sled);
 
+// Rsinusoids
+int sled_rsinusoid_start(sled_t *sled, double amplitude, double period);
+int sled_rsinusoid_stop(sled_t *sled);
+
 // Light
 int sled_light_set_state(sled_t *sled, bool state);
 

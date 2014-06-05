@@ -1,7 +1,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define DIRTY_SINUSOID
+//#define DIRTY_SINUSOID
 
 #endif
 
