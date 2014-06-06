@@ -1,4 +1,5 @@
-import math
+#!/usr/bin/env python
+import math, numpy as np
 
 #
 # This script writes motion profile tables for
@@ -22,6 +23,31 @@ import math
 #
 
 
+def dump_rsinusoid(npoints):
+#
+# Writes a rsinusoidal position profile and the associated 
+# acceleration to the standard output.
+# The rsinusoidal starts as a finite jerk profile and ends as a sinuoidal
+#
+  
+  s = np.empty((npoints), dtype="float64")
+  a = np.empty((npoints), dtype="float64")
+  for i in range(npoints):
+    t = i * 1.0 / (npoints - 1)
+    s[i] = (40-math.pi**2)/4 * t**3 +(math.pi**2-30)/2 * t**4 + (24-math.pi**2)/4 * t**5
+    a[i] = (6*(40-math.pi**2)/4 * t + 12*(math.pi**2-30)/2 * t**2 + 20*(24-math.pi**2)/4 * t**3)
+  s *= 2 ** 31
+  # minus sign is currently correct, change this in PLC program and remove minus sign
+  a *= -2 ** 15 / max(np.absolute(a))
+    
+  print "0, "
+  for i in range(npoints):
+
+    if i == npoints - 1:
+      print "{:0.0f},{:0.0f};".format(s[i], a[i])
+    else:
+      print "{:0.0f},{:0.0f}".format(s[i], a[i])  
+
 def dump_sinusoid(npoints):
 #
 # Writes a sinusoidal position profile and the associated 
@@ -42,7 +68,7 @@ def dump_sinusoid(npoints):
 def dump_min_jerk(npoints):
 #
 # Writes a minimum jerk position profile and the associated
-# acceleration profile to standard output.
+# acceleration profile to standard outpuarrayt.
 #
 # For more information about the profile, see:
 # http://www.shadmehrlab.org/book/minimum_jerk/minimumjerk.htm
@@ -67,5 +93,6 @@ def dump_min_jerk(npoints):
 
 # For correct operation, at least profiles 0 and 2 should be present.
 dump_sinusoid(2048)
-dump_min_jerk(1024)
+#dump_min_jerk(1024)
+dump_rsinusoid(2048)
 dump_min_jerk(2048)
