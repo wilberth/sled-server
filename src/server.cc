@@ -147,6 +147,13 @@ static void rtc3d_command_handler(rtc3d_connection_t *rtc3d_conn, char *cmd)
 				break;
 			}
 
+			if(sled_profile_set_table(ctx->sled, profile_id, 
+					command.table) == -1) {
+				syslog(LOG_ERR, "setting of table failed (%.3fm in %.2fs)", command.position, command.time);
+				rtc3d_send_error(rtc3d_conn, (char *) "err-profile-set");
+				break;
+			}
+
 			if(command.next_profile >= 0) {
 				int next_profile_id = tlate_profile_id(ctx, command.next_profile);
 
