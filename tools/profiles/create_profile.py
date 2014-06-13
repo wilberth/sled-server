@@ -23,7 +23,7 @@ import math, numpy as np
 #
 
 
-def dump_rsinusoid(npoints):
+def dump_rsinusoid(npoints, reverse=False):
 #
 # Writes a rsinusoidal position profile and the associated 
 # acceleration to the standard output.
@@ -37,16 +37,22 @@ def dump_rsinusoid(npoints):
     s[i] = (40-math.pi**2)/4 * t**3 +(math.pi**2-30)/2 * t**4 + (24-math.pi**2)/4 * t**5
     a[i] = (6*(40-math.pi**2)/4 * t + 12*(math.pi**2-30)/2 * t**2 + 20*(24-math.pi**2)/4 * t**3)
   s *= 2 ** 31
-  # minus sign is currently correct, change this in PLC program and remove minus sign
-  a *= -2 ** 15 / max(np.absolute(a))
+  a *= 2 ** 15 / max(np.absolute(a))
     
   print "0, "
-  for i in range(npoints):
-
-    if i == npoints - 1:
-      print "{:0.0f},{:0.0f};".format(s[i], a[i])
-    else:
-      print "{:0.0f},{:0.0f}".format(s[i], a[i])  
+  r = range(npoints)
+  if not reverse:
+    for i in r:
+      if i == npoints - 1:
+        print "{:d},{:d};".format(int(s[i]), int(a[i]))
+      else:
+        print "{:d},{:d}".format(int(s[i]), int(a[i]))  
+  else:
+    for i in reversed(r):
+      if i == npoints - 1:
+        print "{:d},{:d};".format(int(2 ** 31-s[i]), int(-a[i]))
+      else:
+        print "{:d},{:d}".format(int(2 ** 31-s[i]), int(-a[i]))  
 
 def dump_sinusoid(npoints):
 #
@@ -57,7 +63,7 @@ def dump_sinusoid(npoints):
   for i in range(npoints):
     t = i * math.pi / (npoints - 1)
     s = -math.cos(t) * 2 ** 30 + 2 ** 30
-    a = -math.cos(t) * 2 ** 15
+    a = math.cos(t) * 2 ** 15
 
     if i == npoints - 1:
       print "{:0.0f},{:0.0f};".format(s, a)
@@ -81,9 +87,9 @@ def dump_min_jerk(npoints):
         -15 * t ** 4 + \
           6 * t ** 5) * (2 ** 31 - 1)
   
-    a = (-60 * t ** 1 + \
-         180 * t ** 2 + \
-        -120 * t ** 3) * 32767.0 / 5.7735
+    a = (60 * t ** 1 + \
+         -180 * t ** 2 + \
+        120 * t ** 3) * 32767.0 / 5.7735
 
     if i == npoints - 1:
       print "{:0.0f},{:0.0f};".format(s, a)
@@ -96,3 +102,4 @@ dump_sinusoid(2048)
 #dump_min_jerk(1024)
 dump_rsinusoid(2048)
 dump_min_jerk(2048)
+dump_rsinusoid(2048, True)
