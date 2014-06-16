@@ -98,8 +98,8 @@ def dump_min_jerk(npoints):
 
 
 # For correct operation, at least profiles 0 and 2 should be present.
-dump_sinusoid(2048)
+dump_sinusoid(1000)
 #dump_min_jerk(1024)
-dump_rsinusoid(2048)
-dump_min_jerk(2048)
-dump_rsinusoid(2048, True)
+dump_rsinusoid(1000)
+dump_min_jerk(1000)
+dump_rsinusoid(1000, True)
