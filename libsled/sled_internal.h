@@ -100,7 +100,7 @@ struct sled_t {
 	double last_time, last_position, last_velocity;
 
 	// Profiles for sinusoid
-	int sinusoid_there, sinusoid_rthere, sinusoid_back;
+	int sinusoid_there, sinusoid_rthere, sinusoid_back, sinusoid_rback;
 
 	// Time of last NMT message (for watchdog).
 	double time_last_nmt_msg;

@@ -228,10 +228,13 @@ sled_t *sled_create(event_base *ev_base)
 	sled->sinusoid_there = sled_profile_create(sled);
 	sled->sinusoid_rthere = sled_profile_create(sled);
 	sled->sinusoid_back = sled_profile_create(sled);
+	sled->sinusoid_rback = sled_profile_create(sled);
 
 	sled_profile_set_table(sled, sled->sinusoid_there, 0);
-	sled_profile_set_table(sled, sled->sinusoid_rthere, 0);
+	sled_profile_set_table(sled, sled->sinusoid_rthere, 1);
 	sled_profile_set_table(sled, sled->sinusoid_back, 0);
+	sled_profile_set_table(sled, sled->sinusoid_rback, 3);
+	// following three can be removed, these are set in the sinusoid functions
 	sled_profile_set_next(sled, sled->sinusoid_there, sled->sinusoid_back, 0.0, bln_after);
 	sled_profile_set_next(sled, sled->sinusoid_rthere, sled->sinusoid_back, 0.0, bln_after);
 	sled_profile_set_next(sled, sled->sinusoid_back, sled->sinusoid_there, 0.0, bln_after);
@@ -414,16 +417,22 @@ int sled_sinusoid_stop(sled_t *handle)
 int sled_rsinusoid_start(sled_t *handle, double amplitude, double period)
 {
 	assert(handle);
-	syslog(LOG_DEBUG, "%s(%.3f, %.2f)", __FUNCTION__, amplitude, period);
-
-	//sled_profile_set_target(handle, handle->sinusoid_there, pos_absolute, handle->last_position + amplitude * 2.0, period / 2.0);
+	syslog(LOG_DEBUG, "%s(%.3f, %.2f)", __FUNCTION__, amplitude, period);	
+	
 	sled_profile_set_target(handle, handle->sinusoid_rthere, pos_absolute, handle->last_position + amplitude * 2.0, period / 2.0);
+	sled_profile_set_target(handle, handle->sinusoid_there, pos_absolute, handle->last_position + amplitude * 2.0, period / 2.0);
 	sled_profile_set_target(handle, handle->sinusoid_back, pos_absolute, handle->last_position, period / 2.0);
+	sled_profile_set_target(handle, handle->sinusoid_rback, pos_absolute, handle->last_position, period / 2.0);
 
+	sled_profile_set_next(handle, handle->sinusoid_rthere, handle->sinusoid_back, 0.0, bln_after);
 	sled_profile_set_next(handle, handle->sinusoid_there, handle->sinusoid_back, 0.0, bln_after);
 	sled_profile_set_next(handle, handle->sinusoid_back, handle->sinusoid_there, 0.0, bln_after);
+	sled_profile_write_pending_changes(handle, handle->sinusoid_rthere);
+	sled_profile_write_pending_changes(handle, handle->sinusoid_there);
+	sled_profile_write_pending_changes(handle, handle->sinusoid_back);
+	sled_profile_write_pending_changes(handle, handle->sinusoid_rback);
 
-	return sled_profile_execute(handle, handle->sinusoid_there);
+	return sled_profile_execute(handle, handle->sinusoid_rthere);
 }
 /**
  * Stop rsinusoidal motion.
@@ -431,9 +440,7 @@ int sled_rsinusoid_start(sled_t *handle, double amplitude, double period)
 int sled_rsinusoid_stop(sled_t *handle)
 {
 	syslog(LOG_ERR, "Stopping rsinusoid");
-	sled_profile_set_next(handle, handle->sinusoid_there, -1, 0.0, bln_after);
-	sled_profile_set_next(handle, handle->sinusoid_back, -1, 0.0, bln_after);
-
+	sled_profile_set_next(handle, handle->sinusoid_there, handle->sinusoid_rback, 0.0, bln_after);
 	return sled_profile_write_pending_changes(handle, handle->sinusoid_there);
 }
 
