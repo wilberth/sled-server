@@ -18,6 +18,8 @@
 // Output summary statistics every 5 minutes
 #define REPORT_EVERY_X_SAMPLES int(300 * (1e6/SAMPLE_INTERVAL))
 
+//test
+#define SAWTOOTH
 
 /**
  * Returns current time in seconds.
@@ -304,7 +306,12 @@ static void on_timeout(evutil_socket_t sock, short events, void *arg)
 
 	for(std::list<rtc3d_connection_t *>::iterator it = (ctx->stream_clients).begin();
 		it != (ctx->stream_clients).end(); it++) {
+#ifdef SAWTOOTH
+		
+		rtc3d_send_data(*it, frame, (uint64_t) (time * 1e6), fmod(tcurrent, 10.0)*1000);
+#else
 		rtc3d_send_data(*it, frame, (uint64_t) (time * 1e6), position * 1000.0);
+#endif
 	}
 
 	frame++;

@@ -62,7 +62,7 @@ static int setup_realtime()
 	/* Declare ourself as a realtime task */
 	sched_param param;
 	param.sched_priority = PRIORITY;
-	if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+	if(sched_setscheduler(0, SCHED_FIFO, &param )== -1) {
 		perror("setup_realtime():sched_setscheduler()");
 		return -1;
 	}
@@ -73,7 +73,6 @@ static int setup_realtime()
 		perror("setup_realtime():getrlimit()");
 		return -1;
 	}
-
 	if(limit.rlim_cur < MIN_MEMLOCK) {
 		fprintf(stderr, "Memlock limit of %lu MB is not sufficient. "
 						"Increase to at least %lu MB by editing "
@@ -290,6 +289,8 @@ int main(int argc, char **argv)
 
 	// Event loop
 	event_base_loop(ev_base, 0);
+
+	printf("Stopping event loop.\n"); // never reached
 
 	/* Shutdown server */	
 	teardown_sled_server_context(&context);
